@@ -1,0 +1,72 @@
+Solutions to HW 5.
+
+9.2 Discuss the hardware support required to support demand paging.
+
+Answer: For every memory access operation, the page table needs to
+be consulted to check whether the corresponding page is resident or
+not and whether the program has read or write privileges for accessing
+the page. These checks would have to be performed in hardware. A
+TLB could serve as a cache and improve the performance of the lookup
+operation.
+
+9.3 What is the copy-on-write feature and under what circumstances is it
+beneficial to use this feature? What is the hardware support required to
+implement this feature?
+
+Answer: Copy on Write allows processes to share pages rather
+than each having a separate copy of the pages. However,
+when one process tried to write to a shared page, then
+a trap is generated and the OS makes a separate copy of the
+page for each process. This is commonly used in a fork()
+operation where the child is supposed to have a complete
+copy of the parent address space. Rather than create
+a separate copy, the OS allows the parent and child
+to share the parent's pages. However, since each is supposed
+to have its own private copy of the pages, the pages
+are copied when one of them attemps a write. 
+The hardware support required to implement is simply the following:
+on each memory access, the page table needs to be consulted to
+checkwhether the page iswrite-protected. If it is indeedwrite-protected,
+a trap would occur and the operating system could resolve the issue.
+
+9.4 A certain computer provides its users with a virtual-memory space of
+232 bytes. The computer has 218 bytes of physical memory. The virtual
+memory is implemented by paging, and the page size is 4096 bytes.
+A user process generates the virtual address 11123456. Explain how
+the system establishes the corresponding physical location. Distinguish
+between software and hardware operations.
+
+Answer: The virtual address in binary form is
+0001 0001 0001 0010 0011 0100 0101 0110
+Since the page size is 2^12, the page table size is 2^20. Therefore the low
+order 12 bits 0100 0101 0110 are used as the displacement into the page,
+while the remaining 20 bits 0001 0001 0001 0010 0011 are used as the
+displacement in the page table. The offset bits are then 
+concatenated to the resulting physical page number (from the page table),
+to form the final address. 
+
+9.6 Assume that you are monitoring the rate at which the pointer in the
+clock algorithm (which indicates the candidate page for replacement)
+moves. What can you say about the system if you notice the following
+behavior:
+a. pointer is moving fast
+b. pointer is moving slow
+
+Answer: If the pointer is moving fast, then the program is accessing a
+large number of pages simultaneously. It is most likely that during the
+period between the point at which the bit corresponding to a page is
+cleared and it is checked again, the page is accessed again and therefore
+cannot be replaced. This results in more scanning of the pages before
+a victim page is found. If the pointer is moving slow, then the virtual
+memory system is finding candidate pages for replacement extremely
+efficiently, indicating that many of the resident pages are not being accessed.
+
+9.15 9.15 What is the cause of thrashing? How does the system detect thrashing?
+Once it detects thrashing, what can the system do to eliminate this
+problem?
+
+Answer: Thrashing is caused by under allocation of the minimum number
+of pages required by a process, forcing it to continuously page fault.
+The system can detect thrashing by evaluating the level of CPU utilization
+as compared to the level of multiprogramming. It can be eliminated
+by reducing the level of multiprogramming.
